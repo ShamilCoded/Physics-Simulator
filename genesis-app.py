@@ -21,9 +21,9 @@ config_input = st.sidebar.text_area("Initial Conditions (JSON)", default_config)
 # Load configuration
 try:
     config = json.loads(config_input)
-    positions = np.array(config["positions"])
-    velocities = np.array(config["velocities"])
-    masses = np.array(config["masses"])
+    positions = np.array(config["positions"], dtype=float)
+    velocities = np.array(config["velocities"], dtype=float)
+    masses = np.array(config["masses"], dtype=float)
 except (json.JSONDecodeError, KeyError, ValueError):
     st.error("Invalid JSON input. Please ensure it contains 'positions', 'velocities', and 'masses'.")
     st.stop()
@@ -34,20 +34,23 @@ scenario = st.sidebar.selectbox("Select Scenario", ["Custom", "Elastic Collision
 
 if scenario != "Custom":
     if scenario == "Elastic Collision":
-        positions = np.array([[3, 5], [7, 5]])
-        velocities = np.array([[-2, 0], [2, 0]])
-        masses = np.array([1, 1])
+        positions = np.array([[3, 5], [7, 5]], dtype=float)
+        velocities = np.array([[-2, 0], [2, 0]], dtype=float)
+        masses = np.array([1, 1], dtype=float)
     elif scenario == "Gravity Well":
         positions = np.random.rand(10, 2) * 10
-        velocities = np.zeros((10, 2))
+        velocities = np.zeros((10, 2), dtype=float)
         masses = np.random.rand(10) + 0.5
     elif scenario == "Projectile Motion":
-        positions = np.array([[0, 0]])
-        velocities = np.array([[5, 10]])
-        masses = np.array([1])
+        positions = np.array([[0, 0]], dtype=float)
+        velocities = np.array([[5, 10]], dtype=float)
+        masses = np.array([1], dtype=float)
 
 # Simulation logic
 def simulate(positions, velocities, masses, gravity, elasticity, steps, time_step):
+    positions = positions.astype(float)
+    velocities = velocities.astype(float)
+
     history = [positions.copy()]
     for _ in range(steps):
         # Apply gravity
